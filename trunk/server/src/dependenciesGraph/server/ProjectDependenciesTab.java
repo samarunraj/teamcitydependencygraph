@@ -20,9 +20,13 @@ import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PagePlaces;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.project.ProjectTab;
+import jetbrains.buildServer.web.util.WebUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,6 +37,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class ProjectDependenciesTab extends ProjectTab {
+
     protected ProjectDependenciesTab(PagePlaces pagePlaces, ProjectManager projectManager) {
         super("projectDependencies", "Project dependencies", pagePlaces, projectManager, "/dependenciesGraph.html");
     }

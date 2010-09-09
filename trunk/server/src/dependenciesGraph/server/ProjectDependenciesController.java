@@ -14,24 +14,26 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.WebLinks;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.springframework.web.servlet.ModelAndView;
-import dependenciesGraph.common.Util;
 
-/**
- * Example custom page controller
- */
 public class ProjectDependenciesController extends BaseController {
     private PluginDescriptor pluginDescriptor;
     private final WebControllerManager controllerManager;
     private final ProjectManager projectManager;
+    private final WebLinks links;
 
-    public ProjectDependenciesController(PluginDescriptor pluginDescriptor, WebControllerManager controllerManager, ProjectManager projectManager) {
+    public ProjectDependenciesController(PluginDescriptor pluginDescriptor,
+                                         WebControllerManager controllerManager,
+                                         ProjectManager projectManager,
+                                         WebLinks links) {
         this.pluginDescriptor = pluginDescriptor;
         this.controllerManager = controllerManager;
         this.projectManager = projectManager;
+        this.links = links;
         // this will make the controller accessible via <teamcity_url>\dependenciesGraph.html
         controllerManager.registerController("/dependenciesGraph.html", this);
     }
@@ -45,17 +47,14 @@ public class ProjectDependenciesController extends BaseController {
 
         JsonHierarchicalStreamDriver driver = new JsonHierarchicalStreamDriver();
         XStream xs = new XStream(driver);
-
+        xs.alias("nodes", NodeModel[].class);
         String json = xs.toXML(nodes);
 
         ModelAndView view = new ModelAndView(pluginDescriptor.getPluginResourcesPath("dependenciesGraph.jsp"));
-
         String errorImageUrl = WebUtil.getPathWithoutContext(request, "img/buildStates/error.gif");
         String successImageUrl = WebUtil.getPathWithoutContext(request, "img/buildStates/success.gif");
 
         final Map model = view.getModel();
-        model.put("name", Util.NAME);
-        model.put("projectName", project.getName());
         model.put("errorImageUrl", errorImageUrl);
         model.put("successImageUrl", successImageUrl);
         model.put("json", json);
@@ -85,7 +84,14 @@ public class ProjectDependenciesController extends BaseController {
     }
 
     private NodeModel ComputeNodeModel(BuildType buildType, AdjacencyModel[] adjacencies) {
-        return new NodeModel(buildType.getBuildTypeId(), buildType.getName(), adjacencies);
+        return new NodeModel(buildType.getBuildTypeId(), buildType.getName(), ComputeNodeData(buildType), adjacencies);
+    }
+
+    private NodeDataModel ComputeNodeData(BuildType buildType) {
+        boolean successful = buildType.getStatus().isSuccessful();
+        String buildTypeUrl = links.getConfigurationHomePageUrl(buildType);
+
+        return new NodeDataModel(successful, buildTypeUrl);
     }
 
     private AdjacencyModel[] ComputeAdjacencies(Map.Entry<BuildType, List<BuildType>> buildTypeListEntry) {
