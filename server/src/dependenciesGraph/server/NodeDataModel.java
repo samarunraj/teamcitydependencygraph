@@ -19,21 +19,16 @@ package dependenciesGraph.server;
 /**
  * Created by IntelliJ IDEA.
  * User: Simone
- * Date: 8-set-2010
- * Time: 23.56.11
+ * Date: 9-set-2010
+ * Time: 22.14.36
  * To change this template use File | Settings | File Templates.
  */
-public class NodeModel {
-    private final String id;
-    private final String name;
-    private NodeDataModel data;
-    private final AdjacencyModel[] adjacencies;
+public class NodeDataModel {
+    private final boolean $successful;
+    private final String $buildTypeUrl;
 
-    public NodeModel(String nodeId, String nodeName, NodeDataModel nodeData, AdjacencyModel[] adjacencies) {
-
-        this.id = nodeId;
-        this.name = nodeName;
-        this.data = nodeData;
-        this.adjacencies = adjacencies;
+    public NodeDataModel(boolean successful, String buildTypeUrl) {
+        $successful = successful;
+        $buildTypeUrl = buildTypeUrl;
     }
 }

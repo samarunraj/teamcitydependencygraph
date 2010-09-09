@@ -34,6 +34,7 @@
       <entry name="?*.htm" />
       <entry name="?*.jsp" />
       <entry name="?*.js" />
+      <entry name="?*.css" />
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>
